@@ -5,7 +5,9 @@ https://github.com/KurtE/SdFat/tree/Experiment_SDIO2
 
 You will also need the latest "cores" library found here:
 
-https://github.com/KurtE/cores This is an updated version of "cores" that is modified for use with SDIO2 (uSDHC2).
+https://github.com/KurtE/cores This is an updated version of "cores" that is modified for use with SDIO2 (uSDHC2) and can also be found here:
+
+https://github.com/PaulStoffregen/cores
 
 # STRICTLY FOR TESTING THE CYW4343W WIFI CHIP FROM INFINEON!!
 # USE AT OWN RISK
