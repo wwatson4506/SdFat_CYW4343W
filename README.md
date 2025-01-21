@@ -1,7 +1,11 @@
 # SdFat_CYW4343W
-SdFat modified for testing uSDHC2 and CYW4343W. Original SdFat library found here:
+SdFat modified for testing uSDHC2 and CYW4343W. @KurtE's original SdFat library found here:
 
 https://github.com/KurtE/SdFat/tree/Experiment_SDIO2
+
+You will also need the latest "cores" library found here:
+
+https://github.com/KurtE/cores This is an updated version of "cores" that is modified for use with SDIO2 (uSDHC2).
 
 # STRICTLY FOR TESTING THE CYW4343W WIFI CHIP FROM INFINEON!!
 # USE AT OWN RISK
