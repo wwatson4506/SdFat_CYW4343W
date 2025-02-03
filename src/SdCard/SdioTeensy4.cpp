@@ -175,7 +175,7 @@ const uint32_t CMD55_XFERTYP = SDHC_XFERTYP_CMDINX(CMD55) | CMD_RESP_R1;
 SdioCard *SdioCard::s_pSdioCards[2] = {nullptr, nullptr};
 
 #define DBG_TRACE Serial.print("TRACE."); Serial.println(__LINE__); delay(200);
-#define USE_DEBUG_MODE 1
+//#define USE_DEBUG_MODE 1
 #if USE_DEBUG_MODE
 #define DBG_IRQSTAT() if (m_psdhc->INT_STATUS) {Serial.print(__LINE__);\
         Serial.print(" IRQSTAT "); Serial.println(m_psdhc->INT_STATUS, HEX);}
@@ -376,6 +376,7 @@ bool SdioCard::cardCommand(uint32_t xfertyp, uint32_t arg) {
   m_psdhc->INT_STATUS = m_irqstat;
 
   bool return_value = (m_irqstat & SDHC_IRQSTAT_CC) && !(m_irqstat & SDHC_IRQSTAT_CMD_ERROR);
+Serial.printf("return_value = 0x%8.8x\n",return_value);
   if (!return_value) Serial.printf("cardCommand(%x, %x) error return false", xfertyp, arg);  
   return return_value;      
 }
@@ -429,7 +430,7 @@ void SdioCard::initSDHC() {
 
   // Set initial SCK rate.
   setSdclk(SD_MAX_INIT_RATE_KHZ);
-//  setSdclk(500); // Messing aroung with clock rates. No dice...
+//  setSdclk(200); // Messing aroung with clock rates. No dice...
 
   enableGPIO(true, fUseSDIO2);
 
@@ -656,32 +657,49 @@ bool SdioCard::begin(SdioConfig sdioConfig) {
   // Do CMD0 as per manual.
   if (!cardCommand(CMD0_XFERTYP, 0)) {
     Serial.println("cardCommand(CMD0_XFERTYP,0) -- failed");
-    return sdError(SD_CARD_ERROR_CMD0);
+//    return sdError(SD_CARD_ERROR_CMD0);
   }
-
-  // Do CMD8 next as per manual.
-  // Try several times for case of reset delay.
-  for (uint32_t i = 0; i < CMD8_RETRIES; i++) {
-Serial.printf("\n================================================================\n");
-    if (cardCommand(CMD8_XFERTYP, 0X01aa)) { // Failing here due to no response. See cardCommand().
-      if (m_psdhc->CMD_RSP0 != 0X1AA) {
-//        return sdError(SD_CARD_ERROR_CMD8);
-      }
-//      m_version2 = true;
-//      break;
-    }
-
-// print out response registers.
 Serial.printf("\nm_psdhc->CMD_RSP0 = 0x%4.4x\n",m_psdhc->CMD_RSP0);
 Serial.printf("\nm_psdhc->CMD_RSP1 = 0x%4.4x\n",m_psdhc->CMD_RSP1);
 Serial.printf("\nm_psdhc->CMD_RSP2 = 0x%4.4x\n",m_psdhc->CMD_RSP2);
 Serial.printf("\nm_psdhc->CMD_RSP3 = 0x%4.4x\n",m_psdhc->CMD_RSP3);
-   }
+
+  // Do CMD5 as per manual.
+  if (!cardCommand(CMD5_XFERTYP, 0)) {
+    Serial.println("cardCommand(CMD5_XFERTYP,0) -- failed");
+//    return sdError(SD_CARD_ERROR_CMD0);
+  }
+Serial.printf("\nm_psdhc->CMD_RSP0 = 0x%4.4x\n",m_psdhc->CMD_RSP0);
+Serial.printf("\nm_psdhc->CMD_RSP1 = 0x%4.4x\n",m_psdhc->CMD_RSP1);
+Serial.printf("\nm_psdhc->CMD_RSP2 = 0x%4.4x\n",m_psdhc->CMD_RSP2);
+Serial.printf("\nm_psdhc->CMD_RSP3 = 0x%4.4x\n",m_psdhc->CMD_RSP3);
+
+  // Do CMD3 as per manual.
+  if (!cardCommand(CMD3_XFERTYP, 0)) {
+    Serial.println("cardCommand(CMD3_XFERTYP,0) -- failed");
+//    return sdError(SD_CARD_ERROR_CMD0);
+  }
+Serial.printf("\nm_psdhc->CMD_RSP0 = 0x%4.4x\n",m_psdhc->CMD_RSP0);
+Serial.printf("\nm_psdhc->CMD_RSP1 = 0x%4.4x\n",m_psdhc->CMD_RSP1);
+Serial.printf("\nm_psdhc->CMD_RSP2 = 0x%4.4x\n",m_psdhc->CMD_RSP2);
+Serial.printf("\nm_psdhc->CMD_RSP3 = 0x%4.4x\n",m_psdhc->CMD_RSP3);
+
+  // Do CMD7 as per manual.
+  if (!cardCommand(CMD7_XFERTYP, 0)) {
+    Serial.println("cardCommand(CMD7_XFERTYP,0) -- failed");
+//    return sdError(SD_CARD_ERROR_CMD0);
+  }
+Serial.printf("\nm_psdhc->CMD_RSP0 = 0x%4.4x\n",m_psdhc->CMD_RSP0);
+Serial.printf("\nm_psdhc->CMD_RSP1 = 0x%4.4x\n",m_psdhc->CMD_RSP1);
+Serial.printf("\nm_psdhc->CMD_RSP2 = 0x%4.4x\n",m_psdhc->CMD_RSP2);
+Serial.printf("\nm_psdhc->CMD_RSP3 = 0x%4.4x\n",m_psdhc->CMD_RSP3);
+
   // Old version 1 cards have trouble with Teensy 4.1 after CMD8.
   // For reasons unknown, SDIO stops working after the cards does
   // not reply.  Simply restarting and CMD0 is a crude workaround.
 
-return; // For repeat testing
+//while(1);
+//return; // For repeat testing
 
   if (!m_version2) {
     initSDHC();
